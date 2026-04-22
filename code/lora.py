@@ -4,16 +4,16 @@ import math
 
 
 """
-Implementation notes !
-implements LoRA for a linear layer
-formula = h = Wx + (alpha/rank)*(B @ A @ x) 
-in-implementation : h = Wx + (x @ A.T @ B.T) * (alpha/rank)
+Implementation Notes:
+    Implements LoRA for a linear layer
+    Formula = h = Wx + (alpha/rank)*(B @ A @ x) 
+    In-implementation : h = Wx + (x @ A.T @ B.T) * (alpha/rank)
 
 Where
-W: pre-trained frozen weights. Most of the time, we freeze early layers of network and tune the last few layers of the network
-A: low rank matrix (rank, in_dim), initailized with kaiming uniform, 
-B: low rank matrix (out_dim, rank), initailized with zeros
-x : is the input tensor
+    W: pre-trained frozen weights. Most of the time, we freeze early layers of network and tune the last few layers of the network
+    A: low rank matrix (rank, in_dim), initailized with kaiming uniform, 
+    B: low rank matrix (out_dim, rank), initailized with zeros
+    x : is the input tensor
 """
 
 class LoraLayer(nn.Module):
@@ -24,7 +24,7 @@ class LoraLayer(nn.Module):
         out_dim, 
         rank=4, 
         alpha=32
-    ): # here meta-parameters values are set as-per the Table 11
+    ): # meta-parameters values are set as-per the Table 11
         super().__init__()
         
         #A-matrix initialized with empty and it shape (rank, in_dim)
@@ -32,6 +32,7 @@ class LoraLayer(nn.Module):
         nn.init.kaiming_uniform_(self.A, a=math.sqrt(5))
 
         #B-matrix initialized with zeros and its shape (out_dim, rank)
+            # Set as such so BA=0 --> model behaves exactly like pretrained model at start
         self.B=nn.Parameter(torch.zeros(out_dim, rank))
 
         #scaling factor: alpha /rank
@@ -53,13 +54,16 @@ class GPT2LoraWrapper(nn.Module):
         super().__init__()
         self.original_layer = original_layer
         
-        #freeze the original weights W
+        #freeze the original weights W and bias b
         self.original_layer.weight.requires_grad = False
+        if self.original_layer.bias is not None:
+            self.original_layer.bias.requires_grad_(False)
 
         #embedding_dim for GPT-2 Conv1D is accessed via .nx
         self.embedding_dim=original_layer.nx
 
         #define LoRA modules for query (q) and value (v)
+            # LoRA paper --> most impact comes from Q and V (so LoRA isn't applied to key (k))
         self.lora_q=LoraLayer(self.embedding_dim, self.embedding_dim, rank, alpha)
         self.lora_v=LoraLayer(self.embedding_dim, self.embedding_dim, rank, alpha)
         
@@ -77,14 +81,15 @@ class GPT2LoraWrapper(nn.Module):
         # concat back together: q, k(original), v
         return torch.cat([q_updated, k, v_updated], dim=-1)
 
-#here is the next taks - which is inject LoRA to the GPT-2
+# inject LoRA to the GPT-2
 def inject_lora(model, rank=4, alpha=32):
     """here walk through the attention blocks and replace the cross_attention (c_attn) with lora wrapper"""
-    #here this below loop is must, because it keeps all the params freeze initially
+    #keeps all the params frozen
     for param in model.parameters():
         param.requires_grad=False
         
     for i in range(len(model.transformer.h)):
+        # Replace attention layers --> Linear layer to LoRA-wrapped layer
         target=model.transformer.h[i].attn.c_attn
         model.transformer.h[i].attn.c_attn = GPT2LoraWrapper(target, rank, alpha)
         
