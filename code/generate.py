@@ -16,8 +16,8 @@ def generate_batch(model, tokenizer, batch, device):
     input_ids = torch.tensor(batch["input_ids"]).to(device)
     attention_mask = torch.tensor(batch["attention_mask"]).to(device)
 
-    # Use computed prompt lengths to later remove the original prompt portion from the outputs
-    prompt_lengths = attention_mask.sum(dim=1)
+    # Identify full padded prompt portion
+    padded_input_length = input_ids.shape[1]
 
     # Outputs: [prompt tokens + generated tokens]
     with torch.no_grad():
@@ -35,8 +35,8 @@ def generate_batch(model, tokenizer, batch, device):
 
     results = []
     for i, output in enumerate(outputs):
-        # Remove prompt part
-        new_tokens = output[prompt_lengths[i]:]
+        # Remove the full padded prompt portion (not just the real-token count)
+        new_tokens = output[padded_input_length:]
 
         # Decode
         text = tokenizer.decode(new_tokens, skip_special_tokens=True)

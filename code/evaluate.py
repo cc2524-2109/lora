@@ -33,8 +33,7 @@ def compute_meteor(preds, refs):
     scores = []
     for pred, ref_list in zip(preds, refs):
         pred_tok = tokenize(pred)
-        # Take max METEOR across all references for this MR
-        best = max(meteor_score([r], pred) for r in ref_list)
+        best = max(meteor_score([tokenize(r)], pred_tok) for r in ref_list)
         scores.append(best)
     return round(np.mean(scores) * 100, 2)
 
