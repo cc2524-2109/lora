@@ -1,7 +1,9 @@
 import json, os
 import numpy as np
 import nltk
+
 nltk.download('punkt')
+nltk.download('punkt_tab')   
 nltk.download('wordnet')
 
 from nltk.translate.bleu_score  import corpus_bleu, SmoothingFunction
