@@ -28,12 +28,13 @@ class LoraLayer(nn.Module):
         super().__init__()
         
         #A-matrix initialized with empty and it shape (rank, in_dim)
-        self.A=nn.Parameter(torch.empty(rank, in_dim))
-        nn.init.kaiming_uniform_(self.A, a=math.sqrt(5))
+        # self.A=nn.Parameter(torch.empty(rank, in_dim))
+        # nn.init.kaiming_uniform_(self.A, a=math.sqrt(5))
+        self.A = nn.Parameter(torch.randn(rank, in_dim))
 
         #B-matrix initialized with zeros and its shape (out_dim, rank)
             # Set as such so BA=0 --> model behaves exactly like pretrained model at start
-        self.B=nn.Parameter(torch.zeros(out_dim, rank))
+        self.B = nn.Parameter(torch.zeros(out_dim, rank))
 
         #scaling factor: alpha /rank
         self.scaling = alpha/rank

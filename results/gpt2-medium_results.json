@@ -1,0 +1,10 @@
+{
+  "num_examples": 630,
+  "predictions_file": "/content/gdrive/MyDrive/Senior/CS 4782/Project/lora/results/gpt2-medium_predictions.txt",
+  "lora_weights_file": "/content/gdrive/MyDrive/Senior/CS 4782/Project/lora/results/gpt2-medium_lora_weights.pt",
+  "BLEU": 67.38,
+  "NIST": 7.3585,
+  "METEOR": 45.67,
+  "ROUGE-L": 68.81,
+  "CIDEr": 1.7553
+}

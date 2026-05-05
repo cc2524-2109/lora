@@ -8,9 +8,9 @@ nltk.download('wordnet')
 
 from nltk.translate.bleu_score  import corpus_bleu, SmoothingFunction
 from nltk.translate.nist_score  import corpus_nist
-from nltk.translate.meteor_score import meteor_score
 from rouge_score import rouge_scorer as rouge_lib
 from pycocoevalcap.cider.cider import Cider
+from pycocoevalcap.meteor.meteor import Meteor
 
 def tokenize(text):
     """tokenization used for BLEU/NIST/METEOR."""
@@ -32,12 +32,12 @@ def compute_nist(preds, refs):
         return 0.0
 
 def compute_meteor(preds, refs):
-    scores = []
-    for pred, ref_list in zip(preds, refs):
-        pred_tok = tokenize(pred)
-        best = max(meteor_score([tokenize(r)], pred_tok) for r in ref_list)
-        scores.append(best)
-    return round(np.mean(scores) * 100, 2)
+    gts = {i: ref_list           for i, ref_list in enumerate(refs)}
+    res = {i: [preds[i]]         for i in range(len(preds))}
+    scorer = Meteor()
+    score, _ = scorer.compute_score(gts, res)
+    scorer.__del__()  # close the Java subprocess
+    return round(score * 100, 2)
 
 def compute_rouge_l(preds, refs):
     scorer = rouge_lib.RougeScorer(['rougeL'], use_stemmer=True)

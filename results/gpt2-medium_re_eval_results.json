@@ -1,0 +1,10 @@
+{
+  "num_examples": 630,
+  "predictions_file": "/content/gdrive/.shortcut-targets-by-id/1X7tG3A2pprArWBo7iRD_4bw2iX8rrXdY/Project/lora/results/gpt2-medium_predictions.txt",
+  "lora_weights_file": "/content/gdrive/.shortcut-targets-by-id/1X7tG3A2pprArWBo7iRD_4bw2iX8rrXdY/Project/lora/results/gpt2-medium_lora_weights.pt",
+  "BLEU": 67.44,
+  "NIST": 7.3334,
+  "METEOR": 45.48,
+  "ROUGE-L": 69.9,
+  "CIDEr": 1.7777
+}
