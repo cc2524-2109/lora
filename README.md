@@ -15,7 +15,9 @@ Expect slightly lower scores than the paper (e.g. BLEU 67.78 vs 70.40), while st
 The main takeaway from this reimplementation is just how powerful LoRA can be, as well as specifics in physically coding like the training parameters and the process of injecting LoRA
 # 8. References
 Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., & Chen, W. (2021). LoRA: Low-rank adaptation of large language models. arXiv. https://arxiv.org/abs/2106.09685
+
 Wang, A., Singh, A., Michael, J., Hill, F., Levy, O., & Bowman, S. R. (n.d.). GLUE: General Language Understanding Evaluation benchmark. https://gluebenchmark.com/
+
 Novikova, J., Dušek, O., & Rieser, V. (2017). The E2E dataset: New challenges for end-to-end generation. In Proceedings of the 18th Annual Meeting of the Special Interest Group on Discourse and Dialogue (pp. 201–206). Association for Computational Linguistics. https://arxiv.org/abs/1706.09254
 # 9. Acknowledgements
 This project was completed as part of CS4/5782 at Cornell University. We thank the course staff for their guidance and feedback throughout the implementation process. 
